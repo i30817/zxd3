@@ -253,7 +253,7 @@ def patch( source_f, patch_f, out_dir):
 
 
 def main(args=None):
-    args = argparse.OptionParser(
+    args = argparse.ArgumentParser(
     description =
     """This utility uses heuristics to try to diff two zips whose contents are *related* but not named the same.
        This way, it serves a different purpose than utilities like xdelta3-dir-patch which are only effective for 1-to-1 matches in filenames.
@@ -270,7 +270,7 @@ def main(args=None):
        implementations of zip can compress in wildly different ways so xdelta of zips is unlikely to give good results."""
     )
     group = args.add_mutually_exclusive_group()
-    group.add_argument('-c', '--compress', metavar=('source.zip', 'target.zip', 'patch.zxd3'), type=str, nargs=3)
+    group.add_argument('-c', '--compress', metavar=('source.zip', 'target.zip', 'out.zxd3'), type=str, nargs=3)
     group.add_argument('-p', '--patch', metavar=('source.zip', 'patch.zxd3', 'out-dir'), type=str, nargs=3)
     args = args.parse_args()
 

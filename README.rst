@@ -16,6 +16,8 @@ original target zip to a given directory.
 Arguments
 ---------
 
+zxd3 [-h] [-c source.zip target.zip out.zxd3 | -p source.zip patch.zxd3 out-dir]
+
 
 Memory Requirements
 -------------------
