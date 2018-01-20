@@ -1,30 +1,35 @@
 zxd3
 ====
 
-This utility uses sorting heuristics to diff two zips whose contents are
-*related* but not named the same.
-This way, it serves a different purpose than utilities like xdelta3-dir-patch
-which are only effective for 1-to-1 matches in filenames.
-It has two modes: compression takes two zip files, source and target and
-produces a zxd3 patch (*not* usable by the xdelta3 standalone utility) of their
-uncompressed, heuristically sorted, contents concatenated as a uncompressed byte
-stream.
+zxd3 uses heuristics to try to diff two zips whose contents are *related* but
+not named the same. Zip contents never hit the disc except when recreating the
+target at the final step of -p.
 
-Patch takes a source zip and a zxd3 file and extracts the contents of the
-original target zip to a given directory.
+zxd3 patches are *not* usable by the xdelta3 standalone utility.
 
 Arguments
 ---------
 
-zxd3 [-h] [-c source.zip target.zip patch.zxd3 | -p source.zip patch.zxd3 out-dir]
+zxd3 [-h] [-c source.zip target.zip | -c2 source.zip target.zip patch.zxd3 | -p source.zip patch.zxd3 out-dir]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c source.zip target.zip
+                        create a patch that transforms source zip into target
+                        zip and extracts them. Patch will be named as
+                        source.zip.zxd3
+  -c2 source.zip target.zip patch.zxd3
+                        create a patch that transforms source zip into target
+                        zip and extracts them
+  -p source.zip patch.zxd3 out-dir
+                        apply a patch to source zip and extract contents of
+                        the patch to out-dir
 
 
 Memory Requirements
 -------------------
-This program will not create temporary files on patch creation and only will
-create the real output files during patch application.
 
-Required memory is at least 256mb, probably more. Each of the 2 zips has a
+Required memory is at least 256mb, possibly more. Each of the 2 zips has a
 sliding window of 64mb that it fills to create xdelta3 diffs, and the xdelta3
 module doesn't consume memory view, so the 'usuable' part of those views has to
 be converted to bytes array during encoding and decoding

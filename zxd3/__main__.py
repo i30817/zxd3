@@ -255,32 +255,34 @@ def patch( source_f, patch_f, out_dir):
 
 def main(args=None):
     args = argparse.ArgumentParser(
-    description =
-    """This utility uses heuristics to try to diff two zips whose contents are *related* but not named the same.
-       This way, it serves a different purpose than utilities like xdelta3-dir-patch which are only effective for 1-to-1 matches in filenames.
-       It has two modes: compression takes two zip files, source and target and produces a zxd3 patch (*not* usable by the xdelta3 standalone
-       utility) of their uncompressed, heuristically sorted, contents concatenated as a uncompressed byte stream.
-       The window is 64 mb so it's quite generous to missing or extra files making a mess of things.
-       Patch takes a source zip and a zxd3 file and extracts the contents of the original target zip to a given directory.
-""",
-    epilog=
-    """The heuristics sort the zip stream into related units. First files are gathered by in-order depth first transversal.
-       Then on that same order which is equivalent to directory groups, files in 'dirs' and only considering their name without
-       extensions are sorted 'naturally' (where numbers do what you'd expect, unlike normal sort).
-       In addition to the case where the contents are related but not named the same, this tool exists because different files and
-       implementations of zip can compress in wildly different ways so xdelta of zips is unlikely to give good results."""
+    description ="""
+zxd3 uses heuristics to try to diff two zips whose contents are *related* but
+not named the same. Zip contents never hit the disc except when recreating the
+target at the final step of -p.
+
+It requires at least 256mb to be safe.""",
+    epilog="""
+In addition to the case where the contents are related but not named the same,
+this tool exists because different files and implementations of zip can compress
+in wildly different ways and orders so xdelta of zips is unlikely to give good
+results.""",
     )
     group = args.add_mutually_exclusive_group()
-    group.add_argument('-c', '--compress', metavar=('source.zip', 'target.zip', 'patch.zxd3'), type=str, nargs=3)
-    group.add_argument('-p', '--patch', metavar=('source.zip', 'patch.zxd3', 'out-dir'), type=str, nargs=3)
+    group.add_argument('-c', metavar=('source.zip', 'target.zip'), type=str, nargs=2, 
+    help='create a patch that transforms source zip into target zip and extracts them. Patch will be named as source.zip.zxd3')
+    group.add_argument('-c2', metavar=('source.zip', 'target.zip', 'patch.zxd3'), type=str, nargs=3,
+    help='create a patch that transforms source zip into target zip and extracts them')
+    group.add_argument('-p', metavar=('source.zip', 'patch.zxd3', 'out-dir'), type=str, nargs=3,
+    help='apply a patch to source zip and extract contents of the patch to out-dir')
     args = args.parse_args()
 
     signal.signal(signal.SIGINT, signal.SIG_DFL) # Make Ctrl+C work
-
-    if args.compress:
-        compress(args.compress[0], args.compress[1], args.compress[2])
-    elif args.patch:
-        patch(args.patch[0], args.patch[1], args.patch[2])
+    if args.c:
+        compress(args.c1[0], args.c1[1], args.c1[0]+".zxd3")
+    elif args.c2:
+        compress(args.c2[0], args.c2[1], args.c2[2])
+    elif args.p:
+        patch(args.p[0], args.p[1], args.p[2])
 
 if __name__ == '__main__':
     main()
