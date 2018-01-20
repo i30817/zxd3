@@ -253,7 +253,7 @@ def patch( source_f, patch_f, out_dir):
                         out_file_size -= tmp_consumed
 
 
-def main(args=None):
+def main():
     args = argparse.ArgumentParser(
     description ="""
 zxd3 uses heuristics to try to diff two zips whose contents are *related* but
@@ -278,7 +278,7 @@ results.""",
 
     signal.signal(signal.SIGINT, signal.SIG_DFL) # Make Ctrl+C work
     if args.c:
-        compress(args.c1[0], args.c1[1], args.c1[0]+".zxd3")
+        compress(args.c[0], args.c[1], args.c[0]+".zxd3")
     elif args.c2:
         compress(args.c2[0], args.c2[1], args.c2[2])
     elif args.p:
