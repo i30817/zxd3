@@ -33,7 +33,7 @@ from io import BytesIO
 from functools import reduce
 from itertools import zip_longest, starmap
 
-__version__ = '1.0'
+FILE_FORMAT_VERSION = b'1.0'
 MAGIC = b'zxd3'
 #don't need in-band file flags besides these two yet (or hopefully never)
 
@@ -187,7 +187,7 @@ def compress( source_f, target_f, patch ):
         with open(patch, 'wb') as out:
             #write magic for file in-band id and version for later versions
             pickle.dump( MAGIC, out, protocol=pickle.HIGHEST_PROTOCOL)
-            pickle.dump( __version__, out, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump( FILE_FORMAT_VERSION, out, protocol=pickle.HIGHEST_PROTOCOL)
             #write target (filename, size) list
             pickle.dump( zip(target_sizes, ext2), out, protocol=pickle.HIGHEST_PROTOCOL)
             for x in x3gen:
@@ -225,7 +225,7 @@ def patch( source_f, patch_f, out_dir):
             STORED_MAGIC = pickle.load(patch)
             assert STORED_MAGIC == MAGIC
             #currently unused but could be used backwards compatibility in the future
-            version = pickle.load(patch)
+            file_version = pickle.load(patch)
 
             files_to_write = list(pickle.load(patch))
 
