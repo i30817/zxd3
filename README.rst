@@ -15,7 +15,7 @@ zxd3 [-h] [-c source.zip target.zip | -c2 source.zip target.zip patch.zxd3 | -p 
 optional arguments:
    `-h, --help`
                         show this help message and exit
-   `-c source.zip target.zip` 
+   `-c source.zip target.zip`
                         create a patch that transforms source zip into target
                         zip and extracts them. Patch will be named as
                         source.zip.zxd3
@@ -47,5 +47,21 @@ The project can be installed on linux machines by installing pip3 and running
 `pip3 install --user zxd3` or `pip3 install --user
 https://github.com/i30817/zxd3/archive/master.zip` for the latest master.
 
-Since the xdelta pypi package has no windows version, this program doesn't work
+Since the xdelta3 pypi package has no windows version, this program doesn't work
 there currently.
+
+Credits
+---------
+
+.. class:: tablacreditos
+
++-------------------------------------------------+----------------------------------------------------+
+| xdelta-dir-patcher was a inspiration            | https://github.com/endlessm/xdelta3-dir-patcher    |
++-------------------------------------------------+----------------------------------------------------+
+| xdelta3 python bindings, library I use          | https://pypi.python.org/pypi/xdelta3               |
++-------------------------------------------------+----------------------------------------------------+
+| xdelta, which made the above projects possible  | http://xdelta.org/                                 |
++-------------------------------------------------+----------------------------------------------------+
+| natsort, library I use                          | https://pypi.python.org/pypi/natsort               |
++-------------------------------------------------+----------------------------------------------------+
+

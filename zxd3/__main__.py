@@ -86,7 +86,7 @@ def depth_first_in_order(list_out, tree):
         (_, _, name) = path.rpartition('/')
         (lname, _, _) = name.rpartition('.')
         return lname
- 
+
     natsort_key = natsort_keygen(key=ignore_extension, alg=ns.IGNORECASE)
     temp.sort(key=natsort_key)
     list_out.extend(temp)
@@ -96,7 +96,7 @@ def depth_first_in_order(list_out, tree):
             depth_first_in_order(list_out, t)
 
 #This algorithm first sorts the list of zip files by a path sort (to get a similar if not always equal order to directories).
-#then it builds a file/dir tree it iterates depth-first pre-order, where it groups and sorts 'naturally' files of the same dirs 
+#then it builds a file/dir tree it iterates depth-first pre-order, where it groups and sorts 'naturally' files of the same dirs
 #(doesn't consider extensions because of several corner cases in zips with similar but differently named or segmented files)
 
 #Depth-first pre-order is important because:
@@ -268,7 +268,7 @@ in wildly different ways and orders so xdelta of zips is unlikely to give good
 results.""",
     )
     group = args.add_mutually_exclusive_group()
-    group.add_argument('-c', metavar=('source.zip', 'target.zip'), type=str, nargs=2, 
+    group.add_argument('-c', metavar=('source.zip', 'target.zip'), type=str, nargs=2,
     help='create a patch that transforms source zip into target zip and extracts them. Patch will be named as source.zip.zxd3')
     group.add_argument('-c2', metavar=('source.zip', 'target.zip', 'patch.zxd3'), type=str, nargs=3,
     help='create a patch that transforms source zip into target zip and extracts them')
