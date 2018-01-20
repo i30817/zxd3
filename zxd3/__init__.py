@@ -1,1 +1,2 @@
-__version__ = '1.0'
+from __main__ import compress
+from __main__ import patch

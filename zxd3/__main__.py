@@ -33,7 +33,8 @@ from io import BytesIO
 from functools import reduce
 from itertools import zip_longest, starmap
 
-MAGIC=b'zxd3'
+__version__ = '1.0'
+MAGIC = b'zxd3'
 #don't need in-band file flags besides these two yet (or hopefully never)
 
 try:
