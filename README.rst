@@ -13,25 +13,25 @@ Arguments
 zxd3 [-h] [-c source.zip target.zip | -c2 source.zip target.zip patch.zxd3 | -p source.zip patch.zxd3 out-dir]
 
 optional arguments:
-  -h, --help            show this help message and exit
-  -c source.zip target.zip
+   `-h, --help`
+                        show this help message and exit
+   `-c source.zip target.zip` 
                         create a patch that transforms source zip into target
                         zip and extracts them. Patch will be named as
                         source.zip.zxd3
-  -c2 source.zip target.zip patch.zxd3
+   `-c2 source.zip target.zip patch.zxd3`
                         create a patch that transforms source zip into target
                         zip and extracts them
-  -p source.zip patch.zxd3 out-dir
+   `-p source.zip patch.zxd3 out-dir`
                         apply a patch to source zip and extract contents of
                         the patch to out-dir
-
 
 Memory Requirements
 -------------------
 
 Required memory is at least 256mb, possibly more. Each of the 2 zips has a
 sliding window of 64mb that it fills to create xdelta3 diffs, and the xdelta3
-module doesn't consume memory view, so the 'usuable' part of those views has to
+module doesn't consume memoryview, so the 'usuable' part of those views has to
 be converted to bytes array during encoding and decoding
 
 Install
@@ -49,8 +49,3 @@ https://github.com/i30817/zxd3/archive/master.zip` for the latest master.
 
 Since the xdelta pypi package has no windows version, this program doesn't work
 there currently.
-
-----
-
-
-
