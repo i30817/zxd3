@@ -229,8 +229,7 @@ def patch( source_f, patch_f, out_dir):
 
             files_to_write = list(pickle.load(patch))
 
-            if not len(files_to_write):
-                return
+            assert len(files_to_write), 'corrupt .zxd3 patch'
 
             gen = zip_longest(bytesgen(source_z, ext), pickle_gen(patch))
             x3dec = starmap(xdelta3dec, gen)
@@ -284,6 +283,8 @@ results.""",
     elif args.p:
         patch(args.p[0], args.p[1], args.p[2])
 
+    return 0
+
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
 
