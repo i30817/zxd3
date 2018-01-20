@@ -32,7 +32,7 @@ Memory Requirements
 Required memory is at least 256mb, possibly more. Each of the 2 zips has a
 sliding window of 64mb that it fills to create xdelta3 diffs, and the xdelta3
 module doesn't consume memoryview, so the 'usable' part of those views has to
-be converted to bytes array during encoding and decoding
+be converted to bytes array during encoding and decoding.
 
 Install
 -------
