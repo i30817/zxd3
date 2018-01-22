@@ -32,7 +32,7 @@ from itertools import zip_longest, starmap
 
 FILE_FORMAT_VERSION = b'1.0'
 MAGIC = b'zxd3'
-#don't need in-band file flags besides these two yet (or hopefully never)
+#don't need in-band config file flags yet
 
 try:
     #https://pypi.python.org/pypi/natsort
@@ -279,6 +279,9 @@ results.""",
         compress(args.c2[0], args.c2[1], args.c2[2])
     elif args.p:
         patch(args.p[0], args.p[1], args.p[2])
+    else:
+        parser.print_help()
+        return 1
 
     return 0
 
