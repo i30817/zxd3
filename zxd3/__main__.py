@@ -250,7 +250,7 @@ def patch( source_f, patch_f, out_dir):
 
 
 def main():
-    args = argparse.ArgumentParser(
+    parser = argparse.ArgumentParser(
     description ="""
 zxd3 uses heuristics to try to diff two zips whose contents are *related* but
 not named the same. Zip contents never hit the disc except when recreating the
@@ -263,14 +263,14 @@ this tool exists because different files and implementations of zip can compress
 in wildly different ways and orders so xdelta of zips is unlikely to give good
 results.""",
     )
-    group = args.add_mutually_exclusive_group()
+    group = parser.add_mutually_exclusive_group()
     group.add_argument('-c', metavar=('source.zip', 'target.zip'), type=str, nargs=2,
     help='create a patch that transforms source zip into target zip and extracts them. Patch will be named as source.zip.zxd3')
     group.add_argument('-c2', metavar=('source.zip', 'target.zip', 'patch.zxd3'), type=str, nargs=3,
     help='create a patch that transforms source zip into target zip and extracts them')
     group.add_argument('-p', metavar=('source.zip', 'patch.zxd3', 'out-dir'), type=str, nargs=3,
     help='apply a patch to source zip and extract contents of the patch to out-dir')
-    args = args.parse_args()
+    args = parser.parse_args()
 
     signal.signal(signal.SIGINT, signal.SIG_DFL) # Make Ctrl+C work
     if args.c:
