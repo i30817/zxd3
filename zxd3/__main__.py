@@ -21,7 +21,6 @@ import argparse
 import sys
 import signal
 import collections
-import tarfile
 import io
 import os
 import pickle
@@ -30,7 +29,7 @@ from io import BytesIO
 from functools import reduce
 from itertools import zip_longest, starmap
 
-FILE_FORMAT_VERSION = b'1.0'
+FILE_FORMAT_VERSION = 1
 MAGIC = b'zxd3'
 #don't need in-band config file flags yet
 
@@ -103,13 +102,16 @@ def depth_first_in_order(list_out, tree):
 #names (and not extensions) in dirs natural order is important because:
 #We do not want to lose any implicit name ordering or end with track1.bin followed by track11.BIN and formats like .gdi and .cue
 #can segment large files in different extensions.
-def zip_to_list_extensions(zfile):
+def list_dirs_filesize_and_files(zfile):
     zip_tree = tree()
+    dirs = []
     #in order to maximize the chance of the two zip files having the same depth-first order (instead of one based on zip creation)
     for path in natsorted(zfile.namelist(), alg=ns.PATH):
-        #directories will not be part of the tar
+        #directories will be a non-diffed part of the patch
         if path.endswith("/"):
+            dirs.append(path) #doesn't hurt if they're not empty, but they should
             continue
+
         (prev, _, _) = path.rpartition('/')
         #this is actually building the tree just by referencing
         t = zip_tree
@@ -124,7 +126,7 @@ def zip_to_list_extensions(zfile):
     def lb0(f):
         return zfile.getinfo(f).file_size
 
-    return (list(map(lb0, final_files)), final_files)
+    return (dirs, list(map(lb0, final_files)), final_files)
 
 def bytesgen(zip_file, list_f):
     '''
@@ -172,8 +174,8 @@ def compress( source_f, target_f, patch ):
     #however we can't depend on the the directory structure being the same between the 2 zip to diff (though they usually are).
     #In order to create a effective delta between zips with different file names, we have to use heuristics to relate the files.
     with ZipFile(source_f, 'r') as source_z, ZipFile(target_f, 'r') as target_z:
-        (source_sizes, ext1) = zip_to_list_extensions(source_z)
-        (target_sizes, ext2) = zip_to_list_extensions(target_z)
+        (_, source_sizes, ext1) = list_dirs_filesize_and_files(source_z)
+        (dirs, target_sizes, ext2) = list_dirs_filesize_and_files(target_z)
 
         gen = zip_longest(bytesgen(source_z, ext1), bytesgen(target_z, ext2))
         x3gen = starmap(xdelta3gen, gen)
@@ -185,6 +187,8 @@ def compress( source_f, target_f, patch ):
             #write magic for file in-band id and version for later versions
             pickle.dump( MAGIC, out, protocol=pickle.HIGHEST_PROTOCOL)
             pickle.dump( FILE_FORMAT_VERSION, out, protocol=pickle.HIGHEST_PROTOCOL)
+            #write directories names in target
+            pickle.dump( dirs, out, protocol=pickle.HIGHEST_PROTOCOL)
             #write target (filename, size) list
             pickle.dump( zip(target_sizes, ext2), out, protocol=pickle.HIGHEST_PROTOCOL)
             for x in x3gen:
@@ -216,7 +220,7 @@ def patch( source_f, patch_f, out_dir):
 
     with ZipFile(source_f, 'r') as source_z:
 
-        (source_sizes, ext) = zip_to_list_extensions(source_z)
+        (_, source_sizes, ext) = list_dirs_filesize_and_files(source_z)
 
         with open(patch_f, 'rb') as patch:
             STORED_MAGIC = pickle.load(patch)
@@ -224,9 +228,14 @@ def patch( source_f, patch_f, out_dir):
             #currently unused but could be used backwards compatibility in the future
             file_version = pickle.load(patch)
 
+            dirs_to_write = pickle.load(patch)
             files_to_write = list(pickle.load(patch))
-
             assert len(files_to_write), 'corrupt .zxd3 patch'
+
+            for dir_f in dirs_to_write:
+                #the out file came from a zip file so its seperator is always /, normpath fixes it on windows
+                new_dir = os.path.join( out_dir, os.path.normpath(dir_f) )
+                os.makedirs(new_dir, exist_ok=True)
 
             gen = zip_longest(bytesgen(source_z, ext), pickle_gen(patch))
             x3dec = starmap(xdelta3dec, gen)
@@ -234,7 +243,6 @@ def patch( source_f, patch_f, out_dir):
             index = 0
             x = next(x3dec)
             for (out_file_size, out_file) in files_to_write:
-                #the out file came from a zip file so its seperator is always /, normpath fixes it on windows
                 new_file = os.path.join( out_dir, os.path.normpath(out_file) )
                 os.makedirs(os.path.dirname(new_file), exist_ok=True)
                 with open(new_file, 'wb+') as current:
